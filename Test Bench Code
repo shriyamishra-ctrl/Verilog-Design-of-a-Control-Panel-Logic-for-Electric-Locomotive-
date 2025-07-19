@@ -1,0 +1,39 @@
+module loco_control_tb;
+
+  reg start_btn, brake_btn, rev, fault;
+  wire engine_on_led, brake_led, reverse_led, fault_led, shutdown;
+
+  loco_control uut (
+    .start_btn(start_btn),
+    .brake_btn(brake_btn),
+    .rev(rev),
+    .fault(fault),
+    .engine_on_led(engine_on_led),
+    .brake_led(brake_led),
+    .reverse_led(reverse_led),
+    .fault_led(fault_led),
+    .shutdown(shutdown)
+  );
+
+  initial begin
+    $display("Time\tSTART\tBRAKE\tREV\tFAULT\tENG_ON\tSHUTDOWN");
+    $monitor("%0d\t%b\t%b\t%b\t%b\t%b\t%b",
+      $time, start_btn, brake_btn, rev, fault, engine_on_led, shutdown);
+
+    // Dump waveforms
+    $dumpfile("dump.vcd");
+    $dumpvars(0, loco_control_tb);
+
+    // Test sequence
+    start_btn = 0; brake_btn = 0; rev = 0; fault = 0; #10;
+    start_btn = 1; brake_btn = 1; rev = 0; fault = 0; #10;
+    rev       = 1; #10;
+    fault     = 1; #10; // Shutdown triggered
+    brake_btn = 0; fault = 0; #10;
+    start_btn = 0; #10;
+    rev       = 1; brake_btn = 1; #10;
+    fault     = 1; #10;
+    start_btn = 0; fault = 0; #10;
+
+    $finish;
+  end
