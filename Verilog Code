@@ -1,0 +1,25 @@
+module loco_control(
+  input start_btn,
+  input brake_btn,
+  input rev,
+  input fault,
+  output reg engine_on_led,
+  output reg brake_led,
+  output reg reverse_led,
+  output reg fault_led,
+  output reg shutdown
+);
+
+always @(*) begin
+  engine_on_led = start_btn;
+  brake_led     = brake_btn;
+  reverse_led   = rev;
+  fault_led     = fault;
+
+  if (fault && start_btn)
+    shutdown = 1;
+  else
+    shutdown = 0;
+end
+
+endmodule
